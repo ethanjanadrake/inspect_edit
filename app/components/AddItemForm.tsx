@@ -17,10 +17,11 @@ export default function AddItemForm({
 	const [disableExplanation, setDisableExplanation] = useState(false);
 	const [disableReason, setDisableReason] = useState(false);
 	const [scorerState, setScorerState] = useState("");
-	const [valueState, setValueState] = useState("");
+	const [valueState, setValueState] = useState<number | string | boolean>("");
 	const [explanationState, setExplanationState] = useState("");
 	const [reasonState, setReasonState] = useState("");
 	const [uuidError, setUuidError] = useState("");
+	const [scoreType, setScoreType] = useState("number");
 
 	const updateUuids = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		const sampleUuids = e.target.value?.toString().trim();
@@ -50,16 +51,38 @@ export default function AddItemForm({
 	const addToStagedChanges = (formData: FormData) => {
 		const sampleUuid = sampleUuidList[0];
 		let scorer = formData.get("scorer")?.toString();
-		let newScore = formData.get("value")?.toString();
+		const submittedScore = formData.get("value")?.toString();
+		const submittedScoreBool = formData.get("value");
 		let explanation = formData.get("explanation")?.toString();
 		let reason = formData.get("reason")?.toString();
-		if (!sampleUuid || !scorer || !newScore || !reason) return;
+		if (
+			!sampleUuid ||
+			!scorer ||
+			submittedScore === null ||
+			submittedScore === undefined ||
+			!reason
+		)
+			return;
 		const newStagedChanges = [...stagedChanges];
+
+		let newScore: number | string | boolean = "";
+
+		if (scoreType === "number" && submittedScore) {
+			newScore = parseFloat(submittedScore);
+		}
+		if (scoreType === "string" && submittedScore) {
+			newScore = submittedScore;
+		}
+		if (scoreType === "checkbox") {
+			newScore = submittedScoreBool !== null;
+		}
+
+		console.log(newScore);
 
 		newStagedChanges.push({
 			sample_uuid: sampleUuid,
 			scorer,
-			value: parseFloat(newScore),
+			value: newScore,
 			explanation,
 			reason,
 		});
@@ -85,6 +108,8 @@ export default function AddItemForm({
 		setReasonState(reason);
 
 		setStagedChanges(newStagedChanges);
+
+		console.log(stagedChanges);
 	};
 	return (
 		<Form
@@ -115,15 +140,58 @@ export default function AddItemForm({
 				defaultValue={scorerState}
 			></BaseInput>
 			<BaseInput
-				type='number'
+				type={scoreType}
 				name='value'
 				label='Score'
-				placeholder='Number (Required)'
-				required={true}
+				placeholder={
+					scoreType === "number" ? "Number (Required)" : "String (Required)"
+				}
+				required={typeof valueState === "boolean" ? false : true}
 				disableState={disableValue}
 				setDisableState={setDisableValue}
-				defaultValue={valueState}
-			></BaseInput>
+				defaultValue={valueState.toString()}
+				defaultChecked={typeof valueState === "boolean" ? valueState : false}
+			>
+				<fieldset className='flex justify-between p-2'>
+					<div>
+						<input
+							type='radio'
+							id='numberValue'
+							name='valueType'
+							value='number'
+							defaultChecked={true}
+							onChange={() => setScoreType("number")}
+						/>
+						<label className='ml-2' htmlFor='numberValue'>
+							Number
+						</label>
+					</div>
+					<div>
+						<input
+							type='radio'
+							id='stringValue'
+							name='valueType'
+							value='string'
+							onChange={() => setScoreType("string")}
+						/>
+						<label className='ml-2' htmlFor='stringValue'>
+							String
+						</label>
+					</div>
+					<div>
+						<input
+							type='radio'
+							id='boolValue'
+							name='valueType'
+							value='checkbox'
+							onChange={() => setScoreType("checkbox")}
+						/>
+						<label className='ml-2' htmlFor='stringValue'>
+							Boolean
+						</label>
+					</div>
+				</fieldset>
+			</BaseInput>
 			<BaseInput
 				type='text'
 				name='explanation'
@@ -157,7 +225,7 @@ export default function AddItemForm({
 export interface SingleEdit {
 	sample_uuid: string;
 	scorer: string;
-	value: number;
+	value: number | string | boolean;
 	explanation?: string;
 	reason: string;
 }

@@ -22,7 +22,7 @@ export default function ReviewChangesForm({
 	const handlePostRequest = async () => {
 		const postBody = JSON.stringify({ edits: [...stagedChanges] });
 		try {
-			const response = await fetch("/api/endpoint", {
+			const response = await fetch("/api/score-edits", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

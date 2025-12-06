@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { SingleEdit } from "./AddItemForm";
 import EditInput from "./EditInput";
 import Form from "next/form";
@@ -16,6 +16,7 @@ export default function ReviewSingleChange({
 }) {
 	const [editState, setEditState] = useState<boolean>(false);
 	const [error, setError] = useState<string>("");
+	const [scoreType, setScoreType] = useState<string>("");
 
 	const submitEdit = (formData: FormData) => {
 		const newStagedChanges = [...stagedChanges];
@@ -24,17 +25,17 @@ export default function ReviewSingleChange({
 		const newScore = formData.get("value")?.toString();
 		const explanation = formData.get("explanation")?.toString();
 		const reason = formData.get("reason")?.toString();
+		let errorMessage = "";
+
 		if (!sampleUuid || !scorer || !newScore || !reason) return;
 		const existingUuids = new Set();
-		stagedChanges.forEach(item => {
-			if (item.sample_uuid !== stagedChanges[index].sample_uuid) {
+		newStagedChanges.forEach(item => {
+			if (item.sample_uuid !== newStagedChanges[index].sample_uuid) {
 				existingUuids.add(item.sample_uuid);
 			}
 		});
 		if (existingUuids.has(sampleUuid)) {
-			setError("UUID is already being edited in this session.");
-		} else {
-			setError("");
+			errorMessage = "UUID is already being edited in this session.";
 		}
 
 		const stagedEdit: SingleEdit = {
@@ -46,11 +47,11 @@ export default function ReviewSingleChange({
 		};
 		newStagedChanges[index] = stagedEdit;
 
-		if (error !== "") {
-			setStagedChanges(newStagedChanges);
+		if (errorMessage === "") {
+			setStagedChanges([...newStagedChanges]);
 			setEditState(false);
-		} else {
 		}
+		setError(errorMessage);
 	};
 
 	const deleteEdit = () => {
@@ -79,12 +80,56 @@ export default function ReviewSingleChange({
 				defaultValue={singleEdit.scorer}
 			/>
 			<EditInput
-				type='number'
+				type={scoreType}
 				name='value'
-				placeholder='Number (Required)'
+				placeholder={
+					scoreType === "number" ? "Number (Required)" : "String (Required)"
+				}
 				label='Score'
 				defaultValue={singleEdit.value}
-			/>
+			>
+				<fieldset className='flex justify-between p-2'>
+					<div>
+						<input
+							type='radio'
+							id='numberValue'
+							name='valueType'
+							value='number'
+							defaultChecked={typeof singleEdit.value === "number"}
+							onChange={() => setScoreType("number")}
+						/>
+						<label className='ml-2' htmlFor='numberValue'>
+							Number
+						</label>
+					</div>
+					<div>
+						<input
+							type='radio'
+							id='stringValue'
+							name='valueType'
+							value='string'
+							defaultChecked={typeof singleEdit.value === "string"}
+							onChange={() => setScoreType("string")}
+						/>
+						<label className='ml-2' htmlFor='stringValue'>
+							String
+						</label>
+					</div>
+					<div>
+						<input
+							type='radio'
+							id='boolValue'
+							name='valueType'
+							value='checkbox'
+							defaultChecked={typeof singleEdit.value === "boolean"}
+							onChange={() => setScoreType("checkbox")}
+						/>
+						<label className='ml-2' htmlFor='stringValue'>
+							Boolean
+						</label>
+					</div>
+				</fieldset>
+			</EditInput>
 			<EditInput
 				type='text'
 				name='explanation'
@@ -122,7 +167,12 @@ export default function ReviewSingleChange({
 			<div className='grid grid-cols-2 gap-3'>
 				<label>Sample UUID</label> {singleEdit.sample_uuid}
 				<label>Scorer</label> {singleEdit.scorer}
-				<label>New Score</label> {singleEdit.value}
+				<label>New Score</label>{" "}
+				{typeof singleEdit.value === "boolean"
+					? singleEdit.value
+						? "True"
+						: "False"
+					: singleEdit.value}
 				<label>Explanation</label> <div>{singleEdit.explanation}</div>
 				<label>Reason</label> {singleEdit.reason}
 			</div>

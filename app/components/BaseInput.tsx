@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, ReactElement } from "react";
 import { Dispatch, SetStateAction } from "react";
 
 export default function BaseInput({
@@ -9,10 +9,12 @@ export default function BaseInput({
 	required,
 	disableState,
 	defaultValue,
+	defaultChecked,
 	setDisableState,
 	onChangeTextArea,
 	validationErrorMessage,
 	sampleList,
+	children,
 }: {
 	type: string;
 	name: string;
@@ -21,10 +23,12 @@ export default function BaseInput({
 	required: boolean;
 	disableState: boolean;
 	defaultValue: string;
+	defaultChecked?: boolean;
 	setDisableState: Dispatch<SetStateAction<boolean>>;
 	onChangeTextArea?: (e: ChangeEvent<HTMLTextAreaElement>) => void;
 	validationErrorMessage?: string;
 	sampleList?: Array<string>;
+	children?: ReactElement;
 }) {
 	return (
 		<div className='flex flex-col w-full'>
@@ -56,20 +60,42 @@ export default function BaseInput({
 						}`}
 					/>
 				) : (
-					<input
-						name={name}
-						type={type}
-						placeholder={placeholder}
-						required={required}
-						tabIndex={disableState ? -1 : 0}
-						readOnly={disableState}
-						defaultValue={defaultValue}
-						className={`m-2 p-2 outline-1 rounded-lg w-full ${
-							disableState
-								? "bg-gray-300 text-gray-700 outline-white"
-								: "bg-white"
-						}`}
-					/>
+					<div className='flex justify-start'>
+						{type === "checkbox" ? (
+							<label
+								className={`m-2 p-2 rounded-lg ${
+									disableState ? "text-gray-400" : ""
+								} ${
+									disableState
+										? "bg-gray-300 text-gray-700 outline-white accent-gray-400"
+										: "bg-white"
+								}`}
+							>
+								True/False:
+							</label>
+						) : (
+							<></>
+						)}
+						<input
+							name={name}
+							type={type}
+							placeholder={placeholder}
+							required={required}
+							tabIndex={disableState ? -1 : 0}
+							readOnly={disableState}
+							defaultValue={defaultValue}
+							defaultChecked={defaultChecked}
+							className={`m-2 p-2 rounded-lg ${
+								type === "checkbox" ? "" : "w-full outline-1"
+							} ${
+								disableState
+									? "bg-gray-300 text-gray-700 outline-white accent-gray-400"
+									: "bg-white"
+							} ${
+								type === "checkbox" && disableState ? "pointer-events-none" : ""
+							}`}
+						/>
+					</div>
 				)}
 				<div className='flex justify-end'>
 					<label htmlFor='disable_sample_uuids'>Lock</label>
@@ -84,6 +110,7 @@ export default function BaseInput({
 						}}
 					/>
 				</div>
+				{children}
 				{validationErrorMessage ? (
 					<div className='text-red-500'>
 						<b>{validationErrorMessage}</b>

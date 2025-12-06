@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { SingleEdit } from "./AddItemForm";
 import EditInput from "./EditInput";
 import Form from "next/form";
@@ -95,6 +95,7 @@ export default function ReviewSingleChange({
 							id='numberValue'
 							name='valueType'
 							value='number'
+							tabIndex={-1}
 							defaultChecked={typeof singleEdit.value === "number"}
 							onChange={() => setScoreType("number")}
 						/>
@@ -108,6 +109,7 @@ export default function ReviewSingleChange({
 							id='stringValue'
 							name='valueType'
 							value='string'
+							tabIndex={-1}
 							defaultChecked={typeof singleEdit.value === "string"}
 							onChange={() => setScoreType("string")}
 						/>
@@ -121,6 +123,7 @@ export default function ReviewSingleChange({
 							id='boolValue'
 							name='valueType'
 							value='checkbox'
+							tabIndex={-1}
 							defaultChecked={typeof singleEdit.value === "boolean"}
 							onChange={() => setScoreType("checkbox")}
 						/>
@@ -154,6 +157,7 @@ export default function ReviewSingleChange({
 				<button
 					className='m-2 bg-red-500 text-white p-2 rounded-md hover:bg-red-600 w-50'
 					onClick={deleteEdit}
+					tabIndex={-1}
 				>
 					Delete Entry
 				</button>

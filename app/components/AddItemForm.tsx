@@ -60,7 +60,8 @@ export default function AddItemForm({
 			!scorer ||
 			submittedScore === null ||
 			submittedScore === undefined ||
-			!reason
+			!reason ||
+			uuidError != ""
 		)
 			return;
 		const newStagedChanges = [...stagedChanges];
@@ -76,8 +77,6 @@ export default function AddItemForm({
 		if (scoreType === "checkbox") {
 			newScore = submittedScoreBool !== null;
 		}
-
-		console.log(newScore);
 
 		newStagedChanges.push({
 			sample_uuid: sampleUuid,
@@ -160,6 +159,7 @@ export default function AddItemForm({
 							name='valueType'
 							value='number'
 							defaultChecked={true}
+							tabIndex={-1}
 							onChange={() => setScoreType("number")}
 						/>
 						<label className='ml-2' htmlFor='numberValue'>
@@ -172,6 +172,7 @@ export default function AddItemForm({
 							id='stringValue'
 							name='valueType'
 							value='string'
+							tabIndex={-1}
 							onChange={() => setScoreType("string")}
 						/>
 						<label className='ml-2' htmlFor='stringValue'>
@@ -184,6 +185,7 @@ export default function AddItemForm({
 							id='boolValue'
 							name='valueType'
 							value='checkbox'
+							tabIndex={-1}
 							onChange={() => setScoreType("checkbox")}
 						/>
 						<label className='ml-2' htmlFor='stringValue'>

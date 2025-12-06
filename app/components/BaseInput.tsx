@@ -1,5 +1,4 @@
-import { ChangeEvent, ReactElement } from "react";
-import { Dispatch, SetStateAction } from "react";
+import { ChangeEvent, ReactElement, Dispatch, SetStateAction } from "react";
 
 export default function BaseInput({
 	type,

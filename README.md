@@ -2,21 +2,20 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies.
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This app was not designed for browser Dark Mode. This can be fixed with styling but for the best experience for now, run your browser in Light Mode.
 
 ## Design
 
@@ -108,3 +107,4 @@ Contains all ReviewSingleChange elements and has a "Submit All Edits" button at 
 2. Copy as JSON Button
 3. More code factoring
 4. Global states to simplify prop drilling--able to accomplish through React Context API
+5. Darkmode styling
